@@ -7,6 +7,7 @@ import logging
 import sys
 
 from eventbrite_extractor.client import EventbriteClient
+from eventbrite_extractor.config import NYC_PLACE_ID
 from eventbrite_extractor.export import export_to_csv, export_to_json
 
 logging.basicConfig(
@@ -40,6 +41,12 @@ def main(argv: list[str] | None = None) -> None:
         help="Results per page (default: 20, max: 50).",
     )
     parser.add_argument(
+        "--place-id",
+        default=NYC_PLACE_ID,
+        help="Who's On First place ID for location filter "
+        "(default: NYC '85977539'). Use 'none' for worldwide.",
+    )
+    parser.add_argument(
         "--online-only",
         action="store_true",
         help="Only include online events.",
@@ -59,15 +66,20 @@ def main(argv: list[str] | None = None) -> None:
 
     args = parser.parse_args(argv)
 
+    place_id = None if args.place_id.lower() == "none" else args.place_id
+    location_label = "NYC" if place_id == NYC_PLACE_ID else (place_id or "worldwide")
+
     logger.info(
-        "Searching Eventbrite for '%s' events (max %d pages)...",
+        "Searching Eventbrite for '%s' events in %s (max %d pages)...",
         args.query,
+        location_label,
         args.pages,
     )
 
     client = EventbriteClient()
     events = client.search_events(
         keyword=args.query,
+        place_id=place_id,
         online_only=args.online_only,
         max_pages=args.pages,
         page_size=args.page_size,
@@ -90,7 +102,7 @@ def main(argv: list[str] | None = None) -> None:
 
     # Print a summary to stdout
     print(f"\n{'=' * 60}")
-    print(f"  Extracted {len(events)} AI events from Eventbrite")
+    print(f"  Extracted {len(events)} AI events from Eventbrite ({location_label})")
     print(f"{'=' * 60}\n")
     for i, event in enumerate(events, 1):
         status = "FREE" if event.is_free else (event.price or "Paid")

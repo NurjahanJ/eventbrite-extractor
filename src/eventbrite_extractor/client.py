@@ -10,6 +10,7 @@ import requests
 from eventbrite_extractor.config import (
     BASE_URL,
     DEFAULT_PAGE_SIZE,
+    NYC_PLACE_ID,
     REQUEST_TIMEOUT,
     get_api_key,
 )
@@ -116,6 +117,7 @@ class EventbriteClient:
     def search_events(
         self,
         keyword: str,
+        place_id: str | None = NYC_PLACE_ID,
         online_only: bool = False,
         max_pages: int = 1,
         page_size: int = DEFAULT_PAGE_SIZE,
@@ -127,6 +129,9 @@ class EventbriteClient:
 
         Args:
             keyword: Search query (e.g. "AI", "machine learning").
+            place_id: Who's On First place ID to filter by location.
+                      Defaults to NYC ("85977539"). Pass None for
+                      worldwide results.
             online_only: If True, only return online events.
             max_pages: Maximum number of pages to fetch.
             page_size: Number of results per page (max 50).
@@ -139,6 +144,9 @@ class EventbriteClient:
             "dates": ["current_future"],
             "page_size": min(page_size, 50),
         }
+
+        if place_id:
+            event_search["places"] = [place_id]
 
         if online_only:
             event_search["online_events_only"] = True

@@ -31,3 +31,6 @@ BASE_URL = "https://www.eventbriteapi.com/v3"
 # Default settings
 DEFAULT_PAGE_SIZE = 20
 REQUEST_TIMEOUT = 30
+
+# Who's On First place ID for New York City
+NYC_PLACE_ID = "85977539"

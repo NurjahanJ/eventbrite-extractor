@@ -174,6 +174,41 @@ class TestEventbriteClient:
         assert event.event_id == "111"
         assert event.title == "AI Workshop"
 
+    def test_search_events_includes_place_id(self):
+        """Default search should include NYC place ID."""
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = SAMPLE_SEARCH_RESPONSE
+        mock_response.raise_for_status = MagicMock()
+
+        client = self._make_client()
+        client._session = MagicMock()
+        client._session.post.return_value = mock_response
+
+        client.search_events(keyword="AI")
+
+        call_args = client._session.post.call_args
+        body = call_args.kwargs.get("json") or call_args[1].get("json")
+        assert "places" in body["event_search"]
+        assert body["event_search"]["places"] == ["85977539"]
+
+    def test_search_events_no_place_id(self):
+        """Passing place_id=None should omit places from search."""
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = SAMPLE_SEARCH_RESPONSE
+        mock_response.raise_for_status = MagicMock()
+
+        client = self._make_client()
+        client._session = MagicMock()
+        client._session.post.return_value = mock_response
+
+        client.search_events(keyword="AI", place_id=None)
+
+        call_args = client._session.post.call_args
+        body = call_args.kwargs.get("json") or call_args[1].get("json")
+        assert "places" not in body["event_search"]
+
     def test_client_requires_api_key(self):
         with (
             patch.dict("os.environ", {}, clear=True),
