@@ -52,9 +52,31 @@ def _group_events(
     return groups
 
 
+def _pick_featured_event(enriched_events: list[dict]) -> dict | None:
+    """Pick the best event to feature at the top of the newsletter.
+
+    Priority: free conferences/workshops first, then soonest event
+    with the most detail (has summary, has image).
+    """
+    if not enriched_events:
+        return None
+
+    # Prefer conferences and workshops that are free
+    priority_types = {"Conference", "Workshop", "Hackathon"}
+
+    def _score(ev: dict) -> tuple:
+        type_bonus = 0 if ev.get("event_type") in priority_types else 1
+        free_bonus = 0 if ev.get("display_price") == "Free" else 1
+        has_summary = 0 if ev.get("summary") else 1
+        date_val = ev.get("start_date") or "9999-99-99"
+        return (type_bonus, free_bonus, has_summary, date_val)
+
+    return min(enriched_events, key=_score)
+
+
 def render_newsletter(
     enriched_events: list[dict],
-    title: str = "AI Events in NYC",
+    title: str = "AI in NYC Weekly",
     subtitle: str | None = None,
     intro_text: str | None = None,
     template_name: str = "newsletter.html",
@@ -75,36 +97,38 @@ def render_newsletter(
     today = date.today()
 
     if subtitle is None:
-        subtitle = today.strftime("%B %Y")
+        subtitle = "Your curated guide to AI events across New York City"
 
     if intro_text is None:
-        # Count free events and event types for a richer intro
-        free_count = sum(
-            1 for e in enriched_events if e.get("display_price") == "Free"
-        )
+        free_count = sum(1 for e in enriched_events if e.get("display_price") == "Free")
         groups = _group_events(enriched_events)
         type_names = [g["type"].lower() + "s" for g in groups]
 
         types_str = (
             ", ".join(type_names[:-1]) + f", and {type_names[-1]}"
             if len(type_names) > 1
-            else type_names[0] if type_names else "events"
+            else type_names[0]
+            if type_names
+            else "events"
         )
 
         free_note = (
-            f" {free_count} of them are completely free."
+            f" {free_count} of them are completely free — no excuses not to show up!"
             if free_count
             else ""
         )
 
         intro_text = (
-            f"We've curated {len(enriched_events)} upcoming AI events "
-            f"in New York City for you — spanning {types_str}. "
-            f"Whether you're looking to learn, build, or connect with "
-            f"the AI community, there's something here for you.{free_note}"
+            f"Welcome to this week's edition of AI in NYC Weekly "
+            f"— your go-to source for the best AI {types_str} "
+            f"happening across the city. "
+            f"Whether you're a student, engineer, founder, designer, "
+            f"or just AI-curious, there's something for you below. "
+            f"This week we found {len(enriched_events)} events.{free_note}"
         )
 
     event_groups = _group_events(enriched_events)
+    featured = _pick_featured_event(enriched_events)
 
     env = Environment(
         loader=FileSystemLoader(str(_TEMPLATES_DIR)),
@@ -116,6 +140,7 @@ def render_newsletter(
         title=title,
         subtitle=subtitle,
         intro_text=intro_text,
+        featured=featured,
         event_groups=event_groups,
         total_events=len(enriched_events),
         generated_date=today.strftime("%B %d, %Y"),

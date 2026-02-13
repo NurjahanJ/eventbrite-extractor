@@ -134,11 +134,9 @@ def main(argv: list[str] | None = None) -> None:
 
     # --- Newsletter ---
     if args.newsletter:
-        nl_title = f"{args.query} Events in {location_label}"
         path = render_newsletter_to_file(
             enriched,
             f"{output_dir}/newsletter.html",
-            title=nl_title,
         )
         logger.info("Newsletter saved to %s", path)
 

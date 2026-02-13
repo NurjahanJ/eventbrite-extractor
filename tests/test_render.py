@@ -134,7 +134,19 @@ class TestRenderNewsletter:
     def test_empty_events(self):
         html = render_newsletter([])
         assert "<!DOCTYPE html>" in html
-        assert "0 upcoming AI events" in html or "curated 0" in html.lower()
+        assert "0 events" in html.lower()
+
+    def test_contains_featured_event(self):
+        html = render_newsletter(_sample_events())
+        assert "Featured Event of the Week" in html
+
+    def test_default_title(self):
+        html = render_newsletter(_sample_events())
+        assert "AI in NYC Weekly" in html
+
+    def test_default_subtitle(self):
+        html = render_newsletter(_sample_events())
+        assert "curated guide" in html.lower()
 
 
 class TestRenderNewsletterToFile:
