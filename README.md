@@ -4,16 +4,17 @@ A Python package that extracts public AI event data from Eventbrite (focused on 
 
 ## Overview
 
-This project implements the **Extract** stage of an ETL pipeline. It collects upcoming event data from Eventbrite's destination/search API, returning structured records for use in newsletters.
+This project implements a full **Extract → Transform → Render** pipeline. It pulls upcoming event data from Eventbrite, cleans and enriches it, and generates a ready-to-send HTML newsletter.
 
 ## Features
 
 - Search events by keyword (default: "AI") and location (default: NYC)
 - Continuation-based pagination and automatic deduplication
 - Rate limit handling with exponential backoff
-- Structured event records with 23 fields
+- Transform: filter, sort, classify, and format events for display
+- Render: HTML newsletter grouped by event type (Conference, Workshop, Meetup, etc.)
 - JSON and CSV export
-- CLI script for one-command extraction
+- CLI script for one-command extraction + newsletter generation
 
 ## Quick Start
 
@@ -25,7 +26,7 @@ python -m venv .venv
 pip install -r requirements.txt
 pip install -e ".[dev]"
 cp .env.example .env                # Add your Eventbrite Private token
-python -m eventbrite_extractor.extract_events
+python -m eventbrite_extractor.extract_events --newsletter
 ```
 
 ## Project Structure
@@ -39,8 +40,8 @@ newsletter/
 │   ├── API_Reference.md              # Python API and Event fields
 │   └── Development.md                # Testing, linting, architecture
 ├── src/eventbrite_extractor/          # Package source code
-├── tests/                             # Test suite (25 tests)
-├── output/                            # Extracted event data (JSON/CSV)
+├── tests/                             # Test suite (79 tests)
+├── output/                            # Extracted data + newsletter HTML
 ├── .env.example                       # Environment variable template
 ├── pyproject.toml                     # Build config and Ruff settings
 └── requirements.txt                   # Python dependencies

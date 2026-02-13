@@ -154,10 +154,54 @@ These are also available individually:
 
 ---
 
+## Render
+
+### `render_newsletter(enriched_events, title, subtitle, intro_text, template_name)`
+
+Render enriched events into an HTML newsletter string.
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `enriched_events` | `list[dict]` | *(required)* | Enriched dicts from `transform_events()` |
+| `title` | `str` | `"AI Events in NYC"` | Newsletter title |
+| `subtitle` | `str \| None` | Current month/year | Subtitle below the title |
+| `intro_text` | `str \| None` | Auto-generated | Introductory paragraph |
+| `template_name` | `str` | `"newsletter.html"` | Jinja2 template filename |
+
+**Returns:** `str` — Rendered HTML.
+
+### `render_newsletter_to_file(enriched_events, filepath, **kwargs)`
+
+Render and save the newsletter to an HTML file. Creates parent directories if needed.
+
+**Returns:** `Path` to the written file.
+
+```python
+from eventbrite_extractor.render import render_newsletter_to_file
+
+render_newsletter_to_file(enriched, "output/newsletter.html", title="AI Events")
+```
+
+The newsletter template:
+- Groups events by type (Conferences, Workshops, Talks, Meetups, etc.)
+- Shows formatted date, location, price, and summary for each event
+- Uses email-safe inline CSS with a modern purple gradient header
+- Includes "View Event" buttons linking to Eventbrite
+
+---
+
 ## Full Example
 
 ```python
-from eventbrite_extractor import EventbriteClient, transform_events, export_to_json, export_to_csv
+from eventbrite_extractor import (
+    EventbriteClient,
+    transform_events,
+    render_newsletter_to_file,
+    export_to_json,
+    export_to_csv,
+)
 
 client = EventbriteClient()
 
@@ -167,9 +211,12 @@ events = client.search_events(keyword="AI", max_pages=3)
 # Transform
 enriched = transform_events(events, free_first=True)
 
-# Export raw events
+# Export raw data
 export_to_json(events, "output/events.json")
 export_to_csv(events, "output/events.csv")
+
+# Render newsletter
+render_newsletter_to_file(enriched, "output/newsletter.html")
 
 # Use enriched data
 for ev in enriched:

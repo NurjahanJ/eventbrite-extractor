@@ -9,6 +9,7 @@ import sys
 from eventbrite_extractor.client import EventbriteClient
 from eventbrite_extractor.config import NYC_PLACE_ID
 from eventbrite_extractor.export import export_to_csv, export_to_json
+from eventbrite_extractor.render import render_newsletter_to_file
 from eventbrite_extractor.transform import transform_events
 
 logging.basicConfig(
@@ -64,6 +65,11 @@ def main(argv: list[str] | None = None) -> None:
         help="Show free events before paid events.",
     )
     parser.add_argument(
+        "--newsletter",
+        action="store_true",
+        help="Generate an HTML newsletter.",
+    )
+    parser.add_argument(
         "--format",
         choices=["json", "csv", "both"],
         default="both",
@@ -116,7 +122,7 @@ def main(argv: list[str] | None = None) -> None:
 
     logger.info("%d events after transform. Exporting...", len(enriched))
 
-    # --- Export (enriched dicts) ---
+    # --- Export ---
     output_dir = args.output_dir
     if args.format in ("json", "both"):
         path = export_to_json(events, f"{output_dir}/events.json")
@@ -125,6 +131,16 @@ def main(argv: list[str] | None = None) -> None:
     if args.format in ("csv", "both"):
         path = export_to_csv(events, f"{output_dir}/events.csv")
         logger.info("CSV saved to %s", path)
+
+    # --- Newsletter ---
+    if args.newsletter:
+        nl_title = f"{args.query} Events in {location_label}"
+        path = render_newsletter_to_file(
+            enriched,
+            f"{output_dir}/newsletter.html",
+            title=nl_title,
+        )
+        logger.info("Newsletter saved to %s", path)
 
     # --- Print summary ---
     print(f"\n{'=' * 64}")
