@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "eventbrite-extractor"
 version = "0.1.0"
-description = "Eventbrite Data Extraction Package for Newsletter ETL Pipeline"
+description = "Python package for extracting and enriching public event data from Eventbrite"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [

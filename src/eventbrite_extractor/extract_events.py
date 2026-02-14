@@ -1,4 +1,4 @@
-"""CLI script to extract AI events from Eventbrite for the newsletter."""
+"""CLI script to extract AI events from Eventbrite."""
 
 from __future__ import annotations
 
@@ -9,7 +9,6 @@ import sys
 from eventbrite_extractor.client import EventbriteClient
 from eventbrite_extractor.config import NYC_PLACE_ID
 from eventbrite_extractor.export import export_to_csv, export_to_json
-from eventbrite_extractor.render import render_newsletter_to_file
 from eventbrite_extractor.transform import transform_events
 
 logging.basicConfig(
@@ -22,7 +21,7 @@ logger = logging.getLogger(__name__)
 def main(argv: list[str] | None = None) -> None:
     """Run the event extraction pipeline."""
     parser = argparse.ArgumentParser(
-        description="Extract AI events from Eventbrite for newsletter use.",
+        description="Extract AI events from Eventbrite.",
     )
     parser.add_argument(
         "-q",
@@ -63,11 +62,6 @@ def main(argv: list[str] | None = None) -> None:
         "--free-first",
         action="store_true",
         help="Show free events before paid events.",
-    )
-    parser.add_argument(
-        "--newsletter",
-        action="store_true",
-        help="Generate an HTML newsletter.",
     )
     parser.add_argument(
         "--format",
@@ -132,17 +126,9 @@ def main(argv: list[str] | None = None) -> None:
         path = export_to_csv(events, f"{output_dir}/events.csv")
         logger.info("CSV saved to %s", path)
 
-    # --- Newsletter ---
-    if args.newsletter:
-        path = render_newsletter_to_file(
-            enriched,
-            f"{output_dir}/newsletter.html",
-        )
-        logger.info("Newsletter saved to %s", path)
-
     # --- Print summary ---
     print(f"\n{'=' * 64}")
-    print(f"  {len(enriched)} AI events in {location_label} (from {len(events)} raw)")
+    print(f"  {len(enriched)} events in {location_label} (from {len(events)} raw)")
     print(f"{'=' * 64}\n")
 
     for i, ev in enumerate(enriched, 1):

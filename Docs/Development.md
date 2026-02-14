@@ -6,13 +6,12 @@
 pytest tests/ -v
 ```
 
-The test suite includes 79 tests covering:
+The test suite covers:
 
 - **Model tests** — Event creation, API response parsing, serialization
 - **Client tests** — Search, pagination, deduplication, location filtering
 - **Export tests** — JSON and CSV file output
 - **Transform tests** — Filtering, sorting, price/date formatting, classification, full pipeline
-- **Render tests** — Event grouping, HTML rendering, file output, custom parameters
 
 ## Linting and Formatting
 
@@ -45,19 +44,16 @@ src/eventbrite_extractor/
 ├── models.py           # Event dataclass with from_api_response() factory
 ├── client.py           # EventbriteClient — POST to destination/search API
 ├── transform.py        # Filter, sort, enrich, classify events
-├── render.py           # Jinja2 newsletter rendering
-├── templates/          # HTML email templates
-│   └── newsletter.html
 ├── export.py           # export_to_json() and export_to_csv()
-├── extract_events.py   # CLI entry point (Extract → Transform → Render → Export)
+├── extract_events.py   # CLI entry point (Extract → Transform → Export)
 └── __init__.py         # Public API exports
 ```
 
-### ETL Pipeline
+### Pipeline
 
 ```
-Extract (client.py)  →  Transform (transform.py)  →  Render (render.py)  →  Export (export.py)
-  Eventbrite API          Filter, sort, enrich        HTML newsletter       JSON / CSV files
+Extract (client.py)  →  Transform (transform.py)  →  Export (export.py)
+  Eventbrite API          Filter, sort, enrich        JSON / CSV files
 ```
 
 ### Key Design Decisions
@@ -69,5 +65,3 @@ Extract (client.py)  →  Transform (transform.py)  →  Render (render.py)  →
 - **Deduplication** — Events are deduplicated by ID across pages.
 - **Keyword-based classification** — Events are classified into types (Conference, Workshop, Meetup, etc.) by scanning title, summary, and tags for known keywords.
 - **Cross-platform date formatting** — Avoids platform-specific strftime flags (`%-d` vs `%#d`).
-- **Jinja2 templates** — Newsletter HTML uses email-safe inline CSS, table-based layout, and is fully customizable via template overrides.
-- **Event grouping** — Newsletter groups events by type in a preferred display order (Conferences → Workshops → Hackathons → Courses → Talks → Webinars → Meetups).

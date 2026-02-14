@@ -21,7 +21,6 @@ By default this searches for **AI events in New York City** and exports results 
 | `--online-only` | `False` | Only include online events |
 | `--sort-by` | `date` | Sort events by `date` or `title` |
 | `--free-first` | `False` | Show free events before paid events |
-| `--newsletter` | `False` | Generate an HTML newsletter |
 | `--format` | `both` | Output format: `json`, `csv`, or `both` |
 | `-o`, `--output-dir` | `output/` | Output directory |
 
@@ -51,12 +50,6 @@ python -m eventbrite_extractor.extract_events --online-only --place-id none
 python -m eventbrite_extractor.extract_events --free-first
 ```
 
-### Generate a newsletter
-
-```bash
-python -m eventbrite_extractor.extract_events --newsletter
-```
-
 ### Export to a custom directory
 
 ```bash
@@ -65,7 +58,7 @@ python -m eventbrite_extractor.extract_events -o data/ai_events
 
 ## Pipeline
 
-The CLI runs a full **Extract → Transform → Render** pipeline:
+The CLI runs a full **Extract → Transform → Export** pipeline:
 
 1. **Extract** — Fetches raw events from the Eventbrite API
 2. **Transform** — Filters cancelled/past events, sorts, and enriches each event with:
@@ -73,8 +66,7 @@ The CLI runs a full **Extract → Transform → Render** pipeline:
    - **`display_date`** — `"Wed, Mar 4 at 10:00 AM"`
    - **`display_location`** — Venue name, `"Online"`, or `"Location TBD"`
    - **`event_type`** — Conference, Workshop, Meetup, Webinar, Hackathon, Talk, Course, or Event
-3. **Render** (with `--newsletter`) — Generates an HTML newsletter grouped by event type
-4. **Export** — Saves raw event data to JSON and/or CSV
+3. **Export** — Saves event data to JSON and/or CSV
 
 ## Output
 
@@ -82,6 +74,5 @@ The script produces:
 
 - **`output/events.json`** — Full event data in JSON format
 - **`output/events.csv`** — Tabular event data in CSV format
-- **`output/newsletter.html`** — HTML newsletter (when `--newsletter` is used)
 
 The terminal summary shows enriched data with event types, formatted dates, and clean pricing.

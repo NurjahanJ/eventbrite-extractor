@@ -1,20 +1,15 @@
-# Eventbrite Data Extraction Package
+# Eventbrite Event Data Extraction
 
-A Python package that extracts public AI event data from Eventbrite (focused on **New York City**) as part of an ETL pipeline for newsletter content generation.
-
-## Overview
-
-This project implements a full **Extract → Transform → Render** pipeline. It pulls upcoming event data from Eventbrite, cleans and enriches it, and generates a ready-to-send HTML newsletter.
+A Python package that extracts, transforms, and exports public event data from Eventbrite — focused on **AI events in New York City**.
 
 ## Features
 
-- Search events by keyword (default: "AI") and location (default: NYC)
-- Continuation-based pagination and automatic deduplication
+- Search events by keyword and location (default: AI events in NYC)
+- Continuation-based pagination with automatic deduplication
 - Rate limit handling with exponential backoff
-- Transform: filter, sort, classify, and format events for display
-- Render: HTML newsletter grouped by event type (Conference, Workshop, Meetup, etc.)
-- JSON and CSV export
-- CLI script for one-command extraction + newsletter generation
+- Transform pipeline: filter, sort, classify, and enrich events
+- Export to JSON and CSV
+- CLI for one-command extraction
 
 ## Quick Start
 
@@ -26,22 +21,32 @@ python -m venv .venv
 pip install -r requirements.txt
 pip install -e ".[dev]"
 cp .env.example .env                # Add your Eventbrite Private token
-python -m eventbrite_extractor.extract_events --newsletter
+python -m eventbrite_extractor.extract_events
 ```
+
+## Pipeline
+
+```
+Extract (client.py)  →  Transform (transform.py)  →  Export (export.py)
+  Eventbrite API          Filter, sort, enrich        JSON / CSV files
+```
+
+1. **Extract** — Fetches raw events from Eventbrite's `destination/search` API
+2. **Transform** — Filters cancelled/past events, sorts, and enriches with display-ready fields
+3. **Export** — Saves structured data to JSON and/or CSV
 
 ## Project Structure
 
 ```
-newsletter/
 ├── Docs/                              # Documentation
-│   ├── Basic_ Info.md                 # Project overview and goals
+│   ├── Project_Info.md                # Project overview, goals, and scope
 │   ├── Setup.md                       # Installation and API key setup
 │   ├── CLI_Usage.md                   # CLI options and examples
 │   ├── API_Reference.md              # Python API and Event fields
 │   └── Development.md                # Testing, linting, architecture
 ├── src/eventbrite_extractor/          # Package source code
-├── tests/                             # Test suite (79 tests)
-├── output/                            # Extracted data + newsletter HTML
+├── tests/                             # Test suite
+├── output/                            # Extracted data (JSON, CSV)
 ├── .env.example                       # Environment variable template
 ├── pyproject.toml                     # Build config and Ruff settings
 └── requirements.txt                   # Python dependencies
@@ -53,7 +58,7 @@ newsletter/
 - **[CLI Usage](Docs/CLI_Usage.md)** — Command-line options, examples, and output formats
 - **[API Reference](Docs/API_Reference.md)** — Python API, Event fields, and export functions
 - **[Development](Docs/Development.md)** — Testing, linting, project architecture
-- **[Project Info](Docs/Basic_%20Info.md)** — Project goals, scope, and data source details
+- **[Project Info](Docs/Project_Info.md)** — Project goals, scope, and data source details
 
 ## License
 
