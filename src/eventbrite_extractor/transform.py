@@ -258,7 +258,7 @@ def transform_events(
         reference_date: Date to compare against for past-event filtering.
 
     Returns:
-        List of enriched event dicts ready for newsletter use.
+        List of enriched event dicts with display-ready fields.
     """
     # Step 1: Filter
     filtered = filter_events(

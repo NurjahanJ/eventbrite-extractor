@@ -65,4 +65,4 @@ Run the test suite to confirm everything is working:
 pytest tests/ -v
 ```
 
-All 25 tests should pass.
+All tests should pass.
