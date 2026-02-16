@@ -1,0 +1,42 @@
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# Testing / Tools
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.windsurf/
+
+# Output (regenerated at runtime)
+output/
+
+# Docs (not needed in container)
+Docs/
+README.md

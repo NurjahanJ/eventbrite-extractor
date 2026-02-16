@@ -58,6 +58,30 @@ Extract (client.py)  →  Transform (transform.py)  →  Export (export.py)
   Eventbrite API          Filter, sort, enrich        JSON / CSV files
 ```
 
+## Docker
+
+Build and run tests inside Docker without any local Python setup:
+
+```bash
+# Build the test image
+docker build --target test -t eventbrite-extractor-test .
+
+# Run all 62 tests
+docker run --rm eventbrite-extractor-test
+
+# Build the production image
+docker build -t eventbrite-extractor .
+
+# Run extraction
+docker run --rm --env-file .env -v "$(pwd)/output:/app/output" eventbrite-extractor
+```
+
+The `Dockerfile` uses a multi-stage build:
+
+- **`base`** — Installs dependencies and the package
+- **`test`** — Adds pytest and test files
+- **`production`** — Default stage, runs the CLI extractor
+
 ### Key Design Decisions
 
 - **destination/search API** — The old `/events/search/` endpoint is deprecated. This package uses the current `POST /destination/search/` endpoint.

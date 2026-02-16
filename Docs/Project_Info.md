@@ -95,6 +95,7 @@ The `Event` dataclass contains 23 fields per event:
 - Deduplication, filtering, sorting, and enrichment
 - JSON and CSV export
 - CLI for one-command extraction
+- Docker support for portable, reproducible runs
 
 ### Not Included
 

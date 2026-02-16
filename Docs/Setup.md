@@ -65,4 +65,60 @@ Run the test suite to confirm everything is working:
 pytest tests/ -v
 ```
 
-All tests should pass.
+All 62 tests should pass.
+
+---
+
+## Docker Setup (Alternative)
+
+If you prefer not to install Python locally, you can run everything inside Docker.
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) installed and running
+- An Eventbrite API key (see above)
+
+### 1. Clone and Configure
+
+```bash
+git clone https://github.com/NurjahanJ/eventbrite-extractor.git
+cd eventbrite-extractor
+cp .env.example .env
+# Edit .env and add your Eventbrite Private token
+```
+
+### 2. Build the Image
+
+```bash
+docker build -t eventbrite-extractor .
+```
+
+### 3. Run the Extractor
+
+```bash
+docker run --env-file .env -v "$(pwd)/output:/app/output" eventbrite-extractor
+```
+
+- `--env-file .env` passes your API key into the container
+- `-v "$(pwd)/output:/app/output"` mounts your local `output/` directory so extracted files persist after the container exits
+
+> **Windows (PowerShell):** Replace `$(pwd)` with `${PWD}`:
+> ```powershell
+> docker run --env-file .env -v "${PWD}/output:/app/output" eventbrite-extractor
+> ```
+
+### 4. Run with Custom Arguments
+
+```bash
+docker run --env-file .env -v "$(pwd)/output:/app/output" eventbrite-extractor \
+  python -m eventbrite_extractor.extract_events -q "machine learning" --pages 5 --free-first
+```
+
+### 5. Run Tests in Docker
+
+```bash
+docker build --target test -t eventbrite-extractor-test .
+docker run eventbrite-extractor-test
+```
+
+This builds the test stage of the Dockerfile and runs the full test suite inside the container.

@@ -12,6 +12,7 @@ A Python package that extracts, transforms, and exports public event data from E
 - Transform pipeline: filter, sort, classify, and enrich events
 - Export to JSON and CSV
 - CLI for one-command extraction
+- Docker support for reproducible, portable runs
 
 ## Quick Start
 
@@ -84,6 +85,8 @@ Output files are saved to `output/events.json` and `output/events.csv`.
 │   ├── API_Reference.md              #   Python API reference
 │   └── Development.md                #   Testing, linting, architecture
 ├── output/                            # Sample extracted data (JSON, CSV)
+├── Dockerfile                         # Multi-stage Docker build
+├── .dockerignore                      # Docker build exclusions
 ├── .env.example                       # Environment variable template
 ├── pyproject.toml                     # Build config and Ruff settings
 └── requirements.txt                   # Python dependencies
@@ -96,6 +99,30 @@ Output files are saved to `output/events.json` and `output/events.csv`.
 - **[API Reference](Docs/API_Reference.md)** — Python API, Event fields, and export functions
 - **[Development](Docs/Development.md)** — Testing, linting, project architecture
 - **[Project Info](Docs/Project_Info.md)** — Project goals, scope, and data source details
+
+## Docker
+
+Run the extractor without installing Python or dependencies:
+
+```bash
+# Build the image
+docker build -t eventbrite-extractor .
+
+# Run extraction (pass your API key via .env file)
+docker run --env-file .env -v "$(pwd)/output:/app/output" eventbrite-extractor
+
+# Run with custom arguments
+docker run --env-file .env -v "$(pwd)/output:/app/output" eventbrite-extractor \
+  python -m eventbrite_extractor.extract_events -q "machine learning" --pages 5
+
+# Run tests inside the container
+docker build --target test -t eventbrite-extractor-test .
+docker run eventbrite-extractor-test
+```
+
+The `-v` flag mounts your local `output/` directory so extracted files persist after the container exits.
+
+See the [Setup Guide](Docs/Setup.md) for more details.
 
 ## License
 
