@@ -16,8 +16,8 @@ A Python package that extracts, transforms, and exports public event data from E
 ## Quick Start
 
 ```bash
-git clone https://github.com/NurjahanJ/newsletter.git
-cd newsletter
+git clone https://github.com/NurjahanJ/eventbrite-extractor.git
+cd eventbrite-extractor
 python -m venv .venv
 .venv\Scripts\activate              # Windows
 pip install -r requirements.txt

@@ -10,8 +10,8 @@
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/NurjahanJ/newsletter.git
-cd newsletter
+git clone https://github.com/NurjahanJ/eventbrite-extractor.git
+cd eventbrite-extractor
 ```
 
 ### 2. Create a Virtual Environment
