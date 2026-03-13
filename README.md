@@ -13,6 +13,7 @@ A Python package that extracts, transforms, and exports public event data from E
 - Export to JSON and CSV
 - CLI for one-command extraction
 - Docker support for reproducible, portable runs
+- MCP server for AI assistant integration
 
 ## Quick Start
 
@@ -72,7 +73,9 @@ Output files are saved to `output/events.json` and `output/events.csv`.
 │   ├── client.py                      #   Eventbrite API client
 │   ├── transform.py                   #   Filter, sort, enrich, classify
 │   ├── export.py                      #   JSON and CSV export
-│   └── extract_events.py             #   CLI entry point
+│   ├── extract_events.py             #   CLI entry point
+│   ├── mcp_server.py                  #   MCP server (tools, resources, prompts)
+│   └── mcp_main.py                    #   MCP server entry point
 ├── tests/                             # 62 tests across 4 modules
 │   ├── test_models.py                 #   Event creation and parsing
 │   ├── test_client.py                 #   API search, pagination, dedup
@@ -83,11 +86,13 @@ Output files are saved to `output/events.json` and `output/events.csv`.
 │   ├── Setup.md                       #   Installation and API key setup
 │   ├── CLI_Usage.md                   #   CLI options and examples
 │   ├── API_Reference.md              #   Python API reference
-│   └── Development.md                #   Testing, linting, architecture
+│   ├── Development.md                #   Testing, linting, architecture
+│   └── MCP_Usage.md                  #   MCP server setup and usage
 ├── output/                            # Sample extracted data (JSON, CSV)
 ├── Dockerfile                         # Multi-stage Docker build
 ├── .dockerignore                      # Docker build exclusions
 ├── .env.example                       # Environment variable template
+├── .mcp-config.example.json          # MCP server configuration example
 ├── pyproject.toml                     # Build config and Ruff settings
 └── requirements.txt                   # Python dependencies
 ```
@@ -97,6 +102,7 @@ Output files are saved to `output/events.json` and `output/events.csv`.
 - **[Setup Guide](Docs/Setup.md)** — Installation, virtual environment, API key configuration
 - **[CLI Usage](Docs/CLI_Usage.md)** — Command-line options, examples, and output formats
 - **[API Reference](Docs/API_Reference.md)** — Python API, Event fields, and export functions
+- **[MCP Usage](Docs/MCP_Usage.md)** — MCP server setup, tools, resources, and prompts
 - **[Development](Docs/Development.md)** — Testing, linting, project architecture
 - **[Project Info](Docs/Project_Info.md)** — Project goals, scope, and data source details
 
@@ -123,6 +129,47 @@ docker run eventbrite-extractor-test
 The `-v` flag mounts your local `output/` directory so extracted files persist after the container exits.
 
 See the [Setup Guide](Docs/Setup.md) for more details.
+
+## MCP Server
+
+Run as an **MCP (Model Context Protocol) server** to let AI assistants query Eventbrite data:
+
+```bash
+# Install with MCP support
+pip install -e ".[dev]"
+
+# Run the MCP server
+eventbrite-mcp-server
+```
+
+### Configure in Claude Desktop
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "eventbrite-extractor": {
+      "command": "eventbrite-mcp-server",
+      "env": {
+        "EVENTBRITE_API_KEY": "your_api_key_here"
+      }
+    }
+  }
+}
+```
+
+### Available Tools
+
+- **`search_events`** — Search events by keyword, location, filters
+- **`get_event_by_id`** — Fetch specific event details
+
+### Available Resources
+
+- `eventbrite://events/ai-nyc` — Latest AI events in NYC
+- `eventbrite://events/{keyword}/{location}` — Custom searches
+
+See **[MCP Usage Guide](Docs/MCP_Usage.md)** for complete documentation.
 
 ## License
 
